@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:samsung_one_ui_phone/keypad.dart';
@@ -21,26 +22,28 @@ class _PhoneHomeState extends State<PhoneHome> {
 
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
+    var width = kIsWeb ? height * 9 / 16 : MediaQuery.of(context).size.width;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Container(
-          height: 180 * 4.0,
-          width: 90 * 4.0,
+          height: height,
+          width: width,
           child: Scaffold(
               body: PageView(
                 physics: NeverScrollableScrollPhysics(),
                 controller: pageController,
                 children: <Widget>[
                   Keypad(
-                    showBottomNavigationBar: (value) {
-                      if (showBottomNavigationBar != value) {
-                        setState(() {
-                          showBottomNavigationBar = value;
-                        });
-                      }
-                    },
-                  ),
+                      showBottomNavigationBar: (value) {
+                        if (showBottomNavigationBar != value) {
+                          setState(() {
+                            showBottomNavigationBar = value;
+                          });
+                        }
+                      },
+                      width: width),
                   NestedScrollView(
                     headerSliverBuilder:
                         (BuildContext context, bool innerBoxIsScrolled) {

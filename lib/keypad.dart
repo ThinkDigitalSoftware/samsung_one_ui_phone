@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 class Keypad extends StatefulWidget {
-  Keypad({Key key, this.showBottomNavigationBar}) : super(key: key);
+  Keypad({Key key, this.showBottomNavigationBar, this.width}) : super(key: key);
   final ValueChanged<bool> showBottomNavigationBar;
+  final double width;
 
   @override
   _KeypadState createState() => _KeypadState();
@@ -10,6 +11,8 @@ class Keypad extends StatefulWidget {
 
 class _KeypadState extends State<Keypad> {
   final _textEditingController = TextEditingController();
+
+  int maxLength = 15;
 
   @override
   void dispose() {
@@ -51,30 +54,31 @@ class _KeypadState extends State<Keypad> {
             ),
           ),
         ),
-        ConstrainedBox(
-          constraints: BoxConstraints(
-            minWidth: 100,
-            maxWidth: MediaQuery.of(context).size.width,
-            maxHeight: 20.0,
-          ),
-          child: TextField(
-            maxLength: 15,
-            maxLengthEnforced: true,
-            showCursor: true,
-            controller: _textEditingController,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-            ),
-            autofocus: false,
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 30),
+        Container(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Expanded(
+                child: TextField(
+                  maxLength: maxLength,
+                  maxLengthEnforced: true,
+                  showCursor: true,
+                  controller: _textEditingController,
+                  decoration: InputDecoration(
+                      border: InputBorder.none, counter: Container()),
+                  autofocus: false,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 30),
+                ),
+              ),
+            ],
           ),
         ),
         Padding(
           padding: EdgeInsets.only(bottom: 20),
         ),
         Expanded(
-          flex: 3,
+          flex: 5,
           child: GridView.count(
             physics: NeverScrollableScrollPhysics(),
             crossAxisCount: 3,
@@ -83,11 +87,13 @@ class _KeypadState extends State<Keypad> {
               for (final key in [1, 2, 3, 4, 5, 6, 7, 8, 9, '⁎', 0, '#'])
                 InkWell(
                   onTap: () {
-                    setState(() {
-                      _textEditingController.text =
-                          "${_textEditingController.text}$key";
-                      widget.showBottomNavigationBar(false);
-                    });
+                    if (_textEditingController.text.length < maxLength) {
+                      setState(() {
+                        _textEditingController.text =
+                            "${_textEditingController.text}$key";
+                        widget.showBottomNavigationBar(false);
+                      });
+                    }
                   },
                   onLongPress: () {
                     if (key == 0) {
