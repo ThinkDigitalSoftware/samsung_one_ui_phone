@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class Keypad extends StatefulWidget {
   Keypad({Key key, this.showBottomNavigationBar}) : super(key: key);
   final ValueChanged<bool> showBottomNavigationBar;
+
   @override
   _KeypadState createState() => _KeypadState();
 }
@@ -29,49 +30,51 @@ class _KeypadState extends State<Keypad> {
             Padding(padding: EdgeInsets.only(left: 10))
           ],
         ),
-        Container(
-          height: 200,
-          child: Stack(
-            children: <Widget>[
-              if (_textEditingController.text.isNotEmpty)
-                InkWell(
-                  borderRadius: BorderRadius.circular(200),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      '+ Add to Contacts',
-                      style: TextStyle(color: Colors.green),
+        Expanded(
+          flex: 2,
+          child: Container(
+            child: Stack(
+              children: <Widget>[
+                if (_textEditingController.text.isNotEmpty)
+                  InkWell(
+                    borderRadius: BorderRadius.circular(200),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        '+ Add to Contacts',
+                        style: TextStyle(color: Colors.green),
+                      ),
                     ),
+                    onTap: () {},
                   ),
-                  onTap: () {},
-                ),
-            ],
+              ],
+            ),
           ),
         ),
-        Container(
-          height: 20,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                    minWidth: 100, maxWidth: MediaQuery.of(context).size.width),
-                child: TextField(
-                  controller: _textEditingController,
-                  decoration: InputDecoration(border: InputBorder.none),
-                  autofocus: false,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 30),
-                ),
-              ),
-            ],
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            minWidth: 100,
+            maxWidth: MediaQuery.of(context).size.width,
+            maxHeight: 20.0,
+          ),
+          child: TextField(
+            maxLength: 15,
+            maxLengthEnforced: true,
+            showCursor: true,
+            controller: _textEditingController,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+            ),
+            autofocus: false,
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 30),
           ),
         ),
         Padding(
           padding: EdgeInsets.only(bottom: 20),
         ),
         Expanded(
+          flex: 3,
           child: GridView.count(
             physics: NeverScrollableScrollPhysics(),
             crossAxisCount: 3,
