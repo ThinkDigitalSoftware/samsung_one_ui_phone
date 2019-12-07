@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class Keypad extends StatefulWidget {
   Keypad({Key key, this.showBottomNavigationBar, this.width}) : super(key: key);
@@ -13,6 +14,37 @@ class _KeypadState extends State<Keypad> {
   final _textEditingController = TextEditingController();
 
   int maxLength = 15;
+
+  @override
+  void initState() {
+    _textEditingController.addListener(() {
+      String text = _textEditingController.text;
+
+      List<String> chars =
+          text.replaceAll(RegExp(r'[()-\s]'), '').split('').toList();
+      bool showParentheses = chars.length >= 8 && chars.length <= 10;
+      int hyphenLocation;
+      if (chars.length >= 4) {
+        if (chars.length <= 7) {
+          hyphenLocation = 3;
+        } else if (chars.length <= 10) {
+          hyphenLocation = 8;
+        }
+      }
+
+      if (showParentheses) {
+        chars.insert(0, '(');
+        chars.insert(4, ') ');
+      }
+      if (hyphenLocation != null) {
+        chars.insert(hyphenLocation, '-');
+      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _textEditingController.text = chars.join();
+      });
+    });
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -65,10 +97,13 @@ class _KeypadState extends State<Keypad> {
                   showCursor: true,
                   controller: _textEditingController,
                   decoration: InputDecoration(
-                      border: InputBorder.none, counter: Container()),
+                    border: InputBorder.none,
+                    counter: Container(),
+                  ),
                   autofocus: false,
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 30),
+                  inputFormatters: [PhoneNumberInputFormatter()],
                 ),
               ),
             ],
@@ -219,5 +254,21 @@ class _KeypadState extends State<Keypad> {
       bottomText,
       style: TextStyle(color: Colors.grey),
     );
+  }
+}
+
+class PhoneNumberInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    if (newValue.text.length > 3 && newValue.text[3] != '-') {
+      List<String> chars = newValue.text.split('');
+      chars.insert(3, '-');
+      return TextEditingValue(
+          text: chars.join(),
+          selection: newValue.selection,
+          composing: newValue.composing);
+    } else
+      return newValue;
   }
 }
